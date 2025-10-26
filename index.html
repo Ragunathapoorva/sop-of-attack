@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Cybersecurity Operations Center</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>CyberSecOps</h2>
+                <div class="status-indicator online"></div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active" data-tab="dashboard">
+                    <span class="nav-icon">📊</span>Dashboard
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="topology">
+                    <span class="nav-icon">🌐</span>Network Topology
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="simulation">
+                    <span class="nav-icon">⚡</span>Attack Simulation
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="monitoring">
+                    <span class="nav-icon">📡</span>Real-time Monitoring
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="ai-metrics">
+                    <span class="nav-icon">🤖</span>AI Metrics
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="logs">
+                    <span class="nav-icon">📝</span>System Logs
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="reports">
+                    <span class="nav-icon">📊</span>Reports
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="config">
+                    <span class="nav-icon">⚙️</span>Configuration
+                </a></li>
+                <li><a href="#" class="nav-link" data-tab="replay">
+                    <span class="nav-icon">🔄</span>Attack Replay
+                </a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div class="user-details">
+                        <div class="user-name">Security Admin</div>
+                        <div class="user-role">Operations Center</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1 id="page-title">Cybersecurity Operations Dashboard</h1>
+                    <div class="last-updated">Last updated: <span id="last-updated-time">--</span></div>
+                </div>
+                <div class="header-controls">
+                    <button class="btn btn--secondary btn--sm" id="theme-toggle">🌙</button>
+                    <button class="btn btn--primary btn--sm" id="emergency-stop">Emergency Stop</button>
+                </div>
+            </header>
+
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">🎯</div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="active-simulations">3</div>
+                            <div class="metric-label">Active Simulations</div>
+                        </div>
+                    </div>
+                    <div class="metric-card threat">
+                        <div class="metric-icon">⚠️</div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="active-threats">7</div>
+                            <div class="metric-label">Active Threats</div>
+                        </div>
+                    </div>
+                    <div class="metric-card success">
+                        <div class="metric-icon">✅</div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="detection-rate">94%</div>
+                            <div class="metric-label">Detection Rate</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🛡️</div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="total-mitigations">156</div>
+                            <div class="metric-label">Total Mitigations</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <h3>Network Traffic Overview</h3>
+                        <canvas id="traffic-chart"></canvas>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <h3>Attack Types Distribution</h3>
+                        <canvas id="attack-types-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="device-status">
+                    <h3>Device Status Overview</h3>
+                    <div class="devices-grid" id="devices-grid"></div>
+                </div>
+            </section>
+
+            <!-- Advanced Network Topology Tab -->
+            <section id="topology" class="tab-content">
+                <div class="topology-header">
+                    <div class="topology-controls">
+                        <button class="btn btn--primary btn--sm" id="refresh-topology">🔄 Refresh</button>
+                        <button class="btn btn--secondary btn--sm" id="center-topology">🎯 Center</button>
+                        <button class="btn btn--outline btn--sm" id="pause-animations">⏸️ Pause</button>
+                    </div>
+                    <div class="topology-filters">
+                        <label class="filter-label">
+                            <input type="checkbox" id="show-sensors" checked> Sensors
+                        </label>
+                        <label class="filter-label">
+                            <input type="checkbox" id="show-cameras" checked> Cameras
+                        </label>
+                        <label class="filter-label">
+                            <input type="checkbox" id="show-servers" checked> Servers
+                        </label>
+                        <label class="filter-label">
+                            <input type="checkbox" id="show-threats" checked> Threats
+                        </label>
+                    </div>
+                    <div class="topology-stats">
+                        <div class="stat">Nodes: <span id="node-count">0</span></div>
+                        <div class="stat">Connections: <span id="connection-count">0</span></div>
+                        <div class="stat">Active Threats: <span id="threat-count">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="network-topology-container">
+                    <div id="network-topology" class="advanced-network"></div>
+                    <div class="topology-overlay">
+                        <div class="zoom-controls">
+                            <button class="zoom-btn" id="zoom-in">+</button>
+                            <button class="zoom-btn" id="zoom-out">-</button>
+                            <button class="zoom-btn" id="zoom-reset">⌂</button>
+                        </div>
+                        <div class="network-legend">
+                            <h4>Network Legend</h4>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <div class="legend-node sensor"></div>
+                                    <span>IoT Sensors</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-node camera"></div>
+                                    <span>Cameras</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-node server"></div>
+                                    <span>Servers</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-node gateway"></div>
+                                    <span>Gateways</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-node router"></div>
+                                    <span>Routers</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-node threat"></div>
+                                    <span>Threats</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-edge normal"></div>
+                                    <span>Normal Traffic</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-edge attack"></div>
+                                    <span>Attack Path</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="node-details-panel" id="node-details-panel" style="display: none;">
+                    <div class="panel-header">
+                        <h4 id="node-details-title">Node Details</h4>
+                        <button class="panel-close" id="close-node-details">×</button>
+                    </div>
+                    <div class="panel-content" id="node-details-content">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attack Simulation Tab -->
+            <section id="simulation" class="tab-content">
+                <div class="simulation-controls">
+                    <div class="control-group">
+                        <label class="form-label">Attack Type</label>
+                        <select class="form-control" id="attack-type">
+                            <option value="ddos">DDoS Attack</option>
+                            <option value="malware">Malware Injection</option>
+                            <option value="spoofing">IP Spoofing</option>
+                            <option value="injection">Data Injection</option>
+                            <option value="brute-force">Brute Force</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="form-label">Source Device</label>
+                        <select class="form-control" id="source-device">
+                            <option value="external">External Source</option>
+                            <option value="camera_002">Camera 002 (Compromised)</option>
+                            <option value="sensor_001">Sensor 001</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="form-label">Target Device</label>
+                        <select class="form-control" id="target-device">
+                            <option value="gateway_001">Gateway 001 (192.168.1.1)</option>
+                            <option value="server_001">Server 001 (192.168.1.100)</option>
+                            <option value="sensor_001">Sensor 001 (192.168.1.10)</option>
+                            <option value="camera_001">Camera 001 (192.168.1.20)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="form-label">Intensity Level</label>
+                        <input type="range" class="range-control" id="intensity-level" min="1" max="10" value="5">
+                        <div class="range-value">Level: <span id="intensity-value">5</span></div>
+                    </div>
+                    <div class="control-group">
+                        <label class="form-label">Duration (seconds)</label>
+                        <input type="number" class="form-control" id="attack-duration" value="30" min="5" max="300">
+                    </div>
+                    <div class="control-actions">
+                        <button class="btn btn--primary" id="start-attack">🚀 Launch Attack</button>
+                        <button class="btn btn--secondary" id="stop-attack" disabled>🛑 Stop Attack</button>
+                        <button class="btn btn--outline" id="preview-attack">👁️ Preview</button>
+                    </div>
+                </div>
+                <div class="attack-progress" id="attack-progress" style="display: none;">
+                    <h4>Attack Simulation in Progress</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="attack-progress-bar"></div>
+                    </div>
+                    <div class="attack-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Packets Sent:</span>
+                            <span class="stat-value" id="packets-sent">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Detection Rate:</span>
+                            <span class="stat-value" id="detection-rate-sim">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Mitigation:</span>
+                            <span class="stat-value" id="mitigation-status">Monitoring</span>
+                        </div>
+                    </div>
+                    <div class="attack-log" id="attack-log"></div>
+                </div>
+            </section>
+
+            <!-- Real-time Monitoring Tab -->
+            <section id="monitoring" class="tab-content">
+                <div class="monitoring-header">
+                    <div class="monitoring-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Packets/sec:</span>
+                            <span class="stat-value" id="packets-per-sec">1,247</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Bandwidth:</span>
+                            <span class="stat-value" id="bandwidth-usage">78.3 MB/s</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">System Load:</span>
+                            <span class="stat-value" id="system-load">67%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Anomalies:</span>
+                            <span class="stat-value threat" id="anomaly-count">3</span>
+                        </div>
+                    </div>
+                    <div class="monitoring-controls">
+                        <button class="btn btn--primary btn--sm" id="start-monitoring">▶️ Start</button>
+                        <button class="btn btn--secondary btn--sm" id="pause-monitoring">⏸️ Pause</button>
+                    </div>
+                </div>
+                <div class="chart-container" style="position: relative; height: 400px;">
+                    <canvas id="realtime-chart"></canvas>
+                </div>
+                <div class="live-alerts" id="live-alerts">
+                    <h4>Live Security Alerts</h4>
+                    <div class="alerts-list" id="alerts-list"></div>
+                </div>
+            </section>
+
+            <!-- AI Metrics Tab -->
+            <section id="ai-metrics" class="tab-content">
+                <div class="ai-metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h4>Model Accuracy</h4>
+                            <div class="status success">Active</div>
+                        </div>
+                        <div class="metric-value large">94.2%</div>
+                        <div class="metric-trend positive">+2.1% from last week</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h4>Precision</h4>
+                            <div class="status success">Active</div>
+                        </div>
+                        <div class="metric-value large">92.8%</div>
+                        <div class="metric-trend positive">+1.5% from last week</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h4>Recall</h4>
+                            <div class="status success">Active</div>
+                        </div>
+                        <div class="metric-value large">96.1%</div>
+                        <div class="metric-trend positive">+0.8% from last week</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <h4>F1 Score</h4>
+                            <div class="status success">Active</div>
+                        </div>
+                        <div class="metric-value large">94.4%</div>
+                        <div class="metric-trend positive">+1.2% from last week</div>
+                    </div>
+                </div>
+                <div class="model-controls">
+                    <button class="btn btn--primary" id="retrain-model">🔄 Retrain Model</button>
+                    <button class="btn btn--secondary" id="evaluate-model">📊 Evaluate</button>
+                    <button class="btn btn--outline" id="export-model">📤 Export</button>
+                </div>
+                <div class="model-performance">
+                    <h4>AI Performance Over Time</h4>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Logs Tab -->
+            <section id="logs" class="tab-content">
+                <div class="logs-header">
+                    <div class="logs-filters">
+                        <select class="form-control" id="log-level">
+                            <option value="all">All Levels</option>
+                            <option value="critical">Critical</option>
+                            <option value="warning">Warning</option>
+                            <option value="info">Info</option>
+                            <option value="debug">Debug</option>
+                        </select>
+                        <input type="text" class="form-control" id="log-search" placeholder="Search logs...">
+                        <button class="btn btn--primary btn--sm" id="filter-logs">🔍 Filter</button>
+                        <button class="btn btn--secondary btn--sm" id="clear-logs">🗑️ Clear</button>
+                    </div>
+                    <button class="btn btn--outline btn--sm" id="export-logs">📤 Export</button>
+                </div>
+                <div class="logs-container" id="logs-container"></div>
+            </section>
+
+            <!-- Reports Tab -->
+            <section id="reports" class="tab-content">
+                <div class="reports-header">
+                    <h3>Security Reports</h3>
+                    <button class="btn btn--primary" id="generate-report">📄 Generate Report</button>
+                </div>
+                <div class="report-templates">
+                    <h4>Report Templates</h4>
+                    <div class="templates-grid">
+                        <div class="template-card">
+                            <h5>Security Summary</h5>
+                            <p>Comprehensive overview of security incidents and system performance</p>
+                            <button class="btn btn--secondary btn--sm" onclick="generateReport('security-summary')">Generate</button>
+                        </div>
+                        <div class="template-card">
+                            <h5>Threat Analysis</h5>
+                            <p>Detailed analysis of detected threats and attack patterns</p>
+                            <button class="btn btn--secondary btn--sm" onclick="generateReport('threat-analysis')">Generate</button>
+                        </div>
+                        <div class="template-card">
+                            <h5>Performance Report</h5>
+                            <p>AI model performance metrics and system efficiency analysis</p>
+                            <button class="btn btn--secondary btn--sm" onclick="generateReport('performance')">Generate</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="recent-reports">
+                    <h4>Recent Reports</h4>
+                    <div class="reports-list" id="reports-list"></div>
+                </div>
+            </section>
+
+            <!-- Configuration Tab -->
+            <section id="config" class="tab-content">
+                <div class="config-sections">
+                    <div class="config-section">
+                        <h4>Detection Settings</h4>
+                        <div class="form-group">
+                            <label class="form-label">AI Sensitivity Level</label>
+                            <input type="range" class="range-control" id="sensitivity-level" min="1" max="10" value="7">
+                            <div class="range-value">Level: <span id="sensitivity-value">7</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alert Threshold (%)</label>
+                            <input type="number" class="form-control" id="alert-threshold" value="85" min="1" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Real-time Processing</label>
+                            <select class="form-control" id="realtime-processing">
+                                <option value="enabled">Enabled</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="config-section">
+                        <h4>Network Settings</h4>
+                        <div class="form-group">
+                            <label class="form-label">Network Segment</label>
+                            <input type="text" class="form-control" id="network-segment" value="192.168.1.0/24">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Monitoring Port</label>
+                            <input type="number" class="form-control" id="monitoring-port" value="8080">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Update Interval (ms)</label>
+                            <input type="number" class="form-control" id="update-interval" value="1000" min="100" max="10000">
+                        </div>
+                    </div>
+                    <div class="config-section">
+                        <h4>Mitigation Settings</h4>
+                        <div class="form-group">
+                            <label class="form-label">Auto Mitigation</label>
+                            <select class="form-control" id="auto-mitigation">
+                                <option value="enabled">Enabled</option>
+                                <option value="disabled">Disabled</option>
+                                <option value="alert-only">Alert Only</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mitigation Delay (seconds)</label>
+                            <input type="number" class="form-control" id="mitigation-delay" value="5" min="0" max="60">
+                        </div>
+                    </div>
+                </div>
+                <div class="config-actions">
+                    <button class="btn btn--primary" id="save-config">💾 Save Configuration</button>
+                    <button class="btn btn--secondary" id="reset-config">🔄 Reset to Default</button>
+                </div>
+            </section>
+
+            <!-- Attack Replay Tab -->
+            <section id="replay" class="tab-content">
+                <div class="replay-controls">
+                    <div class="replay-selection">
+                        <label class="form-label">Select Attack to Replay</label>
+                        <select class="form-control" id="replay-attack">
+                            <option value="">Select an attack...</option>
+                            <option value="attack_001">DDoS Attack #001 - 2025-01-20 10:30</option>
+                            <option value="attack_002">Malware Injection #002 - 2025-01-20 10:28</option>
+                            <option value="attack_003">IP Spoofing #003 - 2025-01-20 10:25</option>
+                        </select>
+                    </div>
+                    <div class="replay-speed">
+                        <label class="form-label">Playback Speed</label>
+                        <select class="form-control" id="replay-speed">
+                            <option value="0.5">0.5x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="2">2x</option>
+                            <option value="5">5x</option>
+                            <option value="10">10x</option>
+                        </select>
+                    </div>
+                    <div class="replay-actions">
+                        <button class="btn btn--primary" id="start-replay">▶️ Start Replay</button>
+                        <button class="btn btn--secondary" id="pause-replay" disabled>⏸️ Pause</button>
+                        <button class="btn btn--outline" id="stop-replay" disabled>⏹️ Stop</button>
+                    </div>
+                </div>
+                <div class="replay-timeline" id="replay-timeline" style="display: none;">
+                    <h4>Attack Timeline Visualization</h4>
+                    <div class="timeline-container">
+                        <div class="timeline-progress" id="timeline-progress"></div>
+                    </div>
+                    <div class="timeline-events" id="timeline-events"></div>
+                </div>
+                <div class="replay-visualization" id="replay-visualization" style="display: none;">
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="replay-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
